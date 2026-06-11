@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI業務マニュアル作成ツール</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #ffffff;
+      --bg: #f8f9fa;
+      --border: #e0e0e0;
+      --text: #1a1a1a;
+      --text-sub: #555555;
+      --accent: #1a56db;
+      --accent-hover: #1446c0;
+      --accent-light: #eef2ff;
+      --success: #16a34a;
+      --radius: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .header-badge {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 16px 80px;
+    }
+
+    .hero {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--accent);
+    }
+
+    .hero h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .step-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .card label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card .hint {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .checkbox-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-item.checked {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .checkbox-label {
+      flex: 1;
+    }
+
+    .checkbox-label strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .checkbox-label span {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .btn-generate {
+      width: 100%;
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.04em;
+      margin-top: 8px;
+    }
+
+    .btn-generate:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-generate:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .btn-generate:disabled {
+      background: #93b4f0;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 32px;
+      color: var(--text-sub);
+      font-size: 15px;
+    }
+
+    .loading.show { display: block; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-section {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .result-section.show { display: block; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-copy, .btn-download {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-copy {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .btn-copy:hover { background: #dde8ff; }
+
+    .btn-download {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .btn-download:hover { background: var(--accent-hover); }
+
+    .result-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active { display: block; }
+
+    .result-box {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 200px;
+      color: var(--text);
+    }
+
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a1a;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.25s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .copy-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .error-box {
+      background: #fef2f2;
+      border: 1.5px solid #fca5a5;
+      border-radius: 8px;
+      padding: 16px;
+      color: #dc2626;
+      font-size: 14px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .error-box.show { display: block; }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 20px 18px; }
+      .hero h1 { font-size: 19px; }
+      .card { padding: 18px; }
+      .btn-generate { font-size: 16px; padding: 15px; }
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-icon">📋</div>
+    <span class="header-title">AI業務マニュアル作成ツール</span>
+    <span class="header-badge">AIで飯を食う男</span>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>業務内容を入力するだけで<br>マニュアルが完成します</h1>
+    <p>AIが自動で業務マニュアル・チェックリスト・新人教育資料を生成します。<br>難しい操作は一切不要。入力して、ボタンを押すだけです。</p>
+  </div>
+
+  <!-- STEP1 -->
+  <div class="card">
+    <div class="step-label">STEP 1</div>
+    <label for="bizName">業務名を入力してください</label>
+    <p class="hint">例：レジ操作、電話対応、在庫管理、新規顧客対応</p>
+    <input type="text" id="bizName" placeholder="例：レジ操作" maxlength="50" />
+  </div>
+
+  <!-- STEP2 -->
+  <div class="card">
+    <div class="step-label">STEP 2</div>
+    <label for="bizDetail">業務の詳細を入力してください</label>
+    <p class="hint">どんな作業か、どんな手順があるか、注意点などを自由に書いてください。</p>
+    <textarea id="bizDetail" placeholder="例：お客様がレジに来たら挨拶をして、商品のバーコードをスキャンする。現金・クレジット・電子マネーで支払いを受け付ける。領収書が必要かどうか確認する。"></textarea>
+  </div>
+
+  <!-- STEP3 -->
+  <div class="card">
+    <div class="step-label">STEP 3</div>
+    <label>作成する資料を選んでください（複数選択可）</label>
+    <div class="checkbox-group" id="checkboxGroup">
+      <label class="checkbox-item checked">
+        <input type="checkbox" value="manual" checked />
+        <div class="checkbox-label">
+          <strong>📄 業務マニュアル</strong>
+          <span>手順を整理した詳細なマニュアル</span>
+        </div>
+      </label>
+      <label class="checkbox-item checked">
+        <input type="checkbox" value="checklist" checked />
+        <div class="checkbox-label">
+          <strong>✅ チェックリスト</strong>
+          <span>作業漏れを防ぐための確認リスト</span>
+        </div>
+      </label>
+      <label class="checkbox-item checked">
+        <input type="checkbox" value="training" checked />
+        <div class="checkbox-label">
+          <strong>👤 新人教育資料</strong>
+          <span>初めての人でもわかる教育テキスト</span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-generate" id="generateBtn" onclick="generate()">
+    作成する
+  </button>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>AIが資料を作成しています…<br><small>少々お待ちください（10〜30秒）</small></p>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <div class="card">
+      <div class="result-header">
+        <div class="result-title">✨ 作成完了</div>
+        <div class="result-actions">
+          <button class="btn-copy" onclick="copyAll()">全てコピー</button>
+          <button class="btn-download" onclick="downloadAll()">テキスト保存</button>
+        </div>
+      </div>
+      <div class="result-tabs" id="resultTabs"></div>
+      <div id="resultContents"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://note.com/living_on_ai" target="_blank">AIで飯を食う男 | note</a>
+</footer>
+
+<div class="copy-toast" id="copyToast">コピーしました ✓</div>
+
+<script>
+  // チェックボックスのUI更新
+  document.querySelectorAll('.checkbox-item input').forEach(cb => {
+    cb.addEventListener('change', function() {
+      this.closest('.checkbox-item').classList.toggle('checked', this.checked);
+    });
+  });
+
+  const results = {};
+
+  async function generate() {
+    const bizName = document.getElementById('bizName').value.trim();
+    const bizDetail = document.getElementById('bizDetail').value.trim();
+    const checked = [...document.querySelectorAll('.checkbox-item input:checked')].map(c => c.value);
+
+    // バリデーション
+    if (!bizName) {
+      showError('業務名を入力してください。');
+      return;
+    }
+    if (!bizDetail) {
+      showError('業務の詳細を入力してください。');
+      return;
+    }
+    if (checked.length === 0) {
+      showError('作成する資料を1つ以上選んでください。');
+      return;
+    }
+
+    hideError();
+    setLoading(true);
+
+    const typeMap = {
+      manual: '業務マニュアル',
+      checklist: 'チェックリスト',
+      training: '新人教育資料'
+    };
+
+    const prompts = {
+      manual: `以下の業務について、実用的な業務マニュアルを作成してください。
+
+業務名：${bizName}
+業務詳細：${bizDetail}
+
+【フォーマット】
+■ 業務概要
+■ 事前準備
+■ 手順（番号付きで詳細に）
+■ 注意事項
+■ トラブル対応
+
+読みやすく、現場で使えるマニュアルにしてください。`,
+
+      checklist: `以下の業務について、実用的なチェックリストを作成してください。
+
+業務名：${bizName}
+業務詳細：${bizDetail}
+
+【フォーマット】
+■ 事前確認チェックリスト
+□ 項目1
+□ 項目2...
+
+■ 作業中チェックリスト
+□ 項目1
+□ 項目2...
+
+■ 完了確認チェックリスト
+□ 項目1
+□ 項目2...
+
+実際に印刷して使えるチェックリストにしてください。`,
+
+      training: `以下の業務について、新人向け教育資料を作成してください。
+
+業務名：${bizName}
+業務詳細：${bizDetail}
+
+【フォーマット】
+■ この業務について（目的・重要性）
+■ 覚えておくべきポイント
+■ 具体的な手順（初心者向けに丁寧に）
+■ よくある失敗と対処法
+■ 先輩からのアドバイス
+
+業務未経験の新人でも理解できるよう、わかりやすく書いてください。`
+    };
+
+    try {
+      for (const type of checked) {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{ role: 'user', content: prompts[type] }]
+          })
+        });
+
+        if (!res.ok) throw new Error('APIエラーが発生しました。');
+        const data = await res.json();
+        results[type] = data.content.map(b => b.text || '').join('');
+      }
+
+      showResults(checked, typeMap);
+    } catch (e) {
+      showError('エラーが発生しました。しばらくしてから再度お試しください。');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function showResults(checked, typeMap) {
+    const tabsEl = document.getElementById('resultTabs');
+    const contentsEl = document.getElementById('resultContents');
+    tabsEl.innerHTML = '';
+    contentsEl.innerHTML = '';
+
+    checked.forEach((type, i) => {
+      const tab = document.createElement('button');
+      tab.className = 'tab-btn' + (i === 0 ? ' active' : '');
+      tab.textContent = typeMap[type];
+      tab.onclick = () => switchTab(type, checked, typeMap);
+      tabsEl.appendChild(tab);
+
+      const content = document.createElement('div');
+      content.className = 'tab-content' + (i === 0 ? ' active' : '');
+      content.id = 'tab-' + type;
+      content.innerHTML = `<div class="result-box">${escapeHtml(results[type])}</div>`;
+      contentsEl.appendChild(content);
+    });
+
+    document.getElementById('resultSection').classList.add('show');
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function switchTab(activeType, checked, typeMap) {
+    checked.forEach(type => {
+      document.getElementById('tab-' + type).classList.toggle('active', type === activeType);
+    });
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', checked[i] === activeType);
+    });
+  }
+
+  function copyAll() {
+    const all = Object.entries(results).map(([k, v]) => {
+      const labels = { manual: '【業務マニュアル】', checklist: '【チェックリスト】', training: '【新人教育資料】' };
+      return labels[k] + '\n\n' + v;
+    }).join('\n\n' + '─'.repeat(40) + '\n\n');
+
+    navigator.clipboard.writeText(all).then(() => showToast());
+  }
+
+  function downloadAll() {
+    const bizName = document.getElementById('bizName').value.trim();
+    const all = Object.entries(results).map(([k, v]) => {
+      const labels = { manual: '【業務マニュアル】', checklist: '【チェックリスト】', training: '【新人教育資料】' };
+      return labels[k] + '\n\n' + v;
+    }).join('\n\n' + '─'.repeat(40) + '\n\n');
+
+    const blob = new Blob([all], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${bizName}_マニュアル.txt`;
+    a.click();
+  }
+
+  function showToast() {
+    const t = document.getElementById('copyToast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBox');
+    el.textContent = msg;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideError() {
+    document.getElementById('errorBox').classList.remove('show');
+  }
+
+  function setLoading(on) {
+    document.getElementById('loading').classList.toggle('show', on);
+    document.getElementById('generateBtn').disabled = on;
+    document.getElementById('generateBtn').textContent = on ? '作成中...' : '作成する';
+    if (on) document.getElementById('resultSection').classList.remove('show');
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+</body>
+</html>

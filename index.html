@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI業務マニュアル作成ツール</title>
+  <title>AI業務マニュアル プロンプト生成ツール</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -61,7 +61,7 @@
     }
 
     .header-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
     }
@@ -83,8 +83,7 @@
       padding: 28px 16px 80px;
     }
 
-    /* ===== PREVIEW SECTION ===== */
-    .preview-section {
+    .hero {
       background: var(--white);
       border-radius: var(--radius);
       padding: 24px;
@@ -93,73 +92,41 @@
       border-left: 4px solid var(--accent);
     }
 
-    .preview-section h1 {
+    .hero h1 {
       font-size: 20px;
       font-weight: 800;
       color: var(--text);
       line-height: 1.4;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
-    .preview-section p {
+    .hero p {
       font-size: 14px;
       color: var(--text-sub);
       margin-bottom: 16px;
     }
 
-    .sample-output {
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .sample-output-header {
-      background: var(--accent-light);
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sample-output-body {
-      padding: 14px;
-    }
-
-    .sample-block {
-      margin-bottom: 12px;
-    }
-
-    .sample-block:last-child { margin-bottom: 0; }
-
-    .sample-block-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
+    .flow {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
-    .sample-block-content {
+    .flow-step {
+      background: var(--accent-light);
+      color: var(--accent);
       font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .flow-arrow {
       color: var(--text-sub);
-      line-height: 1.8;
+      font-size: 14px;
     }
 
-    .sample-tag {
-      display: inline-block;
-      background: var(--accent);
-      color: white;
-      font-size: 10px;
-      padding: 1px 7px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    /* ===== CARD ===== */
     .card {
       background: var(--white);
       border-radius: var(--radius);
@@ -196,7 +163,12 @@
       margin-bottom: 8px;
     }
 
-    /* ===== EXAMPLE BUTTONS ===== */
+    .example-label {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+
     .example-btns {
       display: flex;
       flex-wrap: wrap;
@@ -223,14 +195,7 @@
       background: var(--accent-light);
     }
 
-    .example-label {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-    }
-
-    /* ===== INPUTS ===== */
-    input[type="text"], textarea {
+    input[type="text"], textarea, select {
       width: 100%;
       border: 1.5px solid var(--border);
       border-radius: 8px;
@@ -244,14 +209,13 @@
       -webkit-appearance: none;
     }
 
-    input[type="text"]:focus, textarea:focus {
+    input[type="text"]:focus, textarea:focus, select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
     }
 
     textarea { resize: vertical; min-height: 90px; }
 
-    /* ===== CHECKBOXES ===== */
     .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
 
     .checkbox-item {
@@ -267,19 +231,11 @@
     }
 
     .checkbox-item:hover { border-color: var(--accent); background: var(--accent-light); }
-
-    .checkbox-item input[type="checkbox"] {
-      width: 18px; height: 18px;
-      accent-color: var(--accent);
-      cursor: pointer; flex-shrink: 0;
-    }
-
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
     .checkbox-item.checked { border-color: var(--accent); background: var(--accent-light); }
-
     .checkbox-label strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); }
     .checkbox-label span { font-size: 12px; color: var(--text-sub); }
 
-    /* ===== BUTTON ===== */
     .btn-generate {
       width: 100%;
       background: var(--accent);
@@ -296,26 +252,21 @@
       margin-top: 6px;
     }
 
-    .btn-generate:hover:not(:disabled) { background: var(--accent-hover); }
-    .btn-generate:active:not(:disabled) { transform: scale(0.99); }
-    .btn-generate:disabled { background: #93b4f0; cursor: not-allowed; }
+    .btn-generate:hover { background: var(--accent-hover); }
+    .btn-generate:active { transform: scale(0.99); }
 
-    /* ===== LOADING ===== */
-    .loading { display: none; text-align: center; padding: 28px; color: var(--text-sub); font-size: 14px; }
-    .loading.show { display: block; }
-
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
+    .error-box {
+      background: #fef2f2;
+      border: 1.5px solid #fca5a5;
+      border-radius: 8px;
+      padding: 14px;
+      color: #dc2626;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
     }
+    .error-box.show { display: block; }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ===== RESULT ===== */
     .result-section { display: none; margin-top: 20px; }
     .result-section.show { display: block; }
 
@@ -323,9 +274,8 @@
       background: var(--white);
       border-radius: var(--radius);
       padding: 22px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       box-shadow: var(--shadow);
-      border-top: 3px solid var(--accent);
     }
 
     .result-card-header {
@@ -341,48 +291,31 @@
       font-size: 15px;
       font-weight: 800;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .result-card-actions { display: flex; gap: 6px; }
-
-    .btn-copy-single {
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      background: var(--accent-light);
-      color: var(--accent);
-      border: none;
-      transition: all 0.15s;
+    .result-card-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 10px;
     }
 
-    .btn-copy-single:hover { background: #dde8ff; }
-
-    .result-content {
-      background: var(--bg);
-      border: 1px solid var(--border);
+    .prompt-box {
+      background: #1a1a2e;
       border-radius: 8px;
       padding: 16px;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.9;
       white-space: pre-wrap;
       word-break: break-word;
-      color: var(--text);
+      color: #e8e8f0;
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+      margin-bottom: 12px;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
-    .result-actions-bottom {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .btn-download-all {
-      flex: 1;
+    .btn-copy {
+      width: 100%;
       padding: 12px;
       border-radius: 8px;
       font-size: 14px;
@@ -395,23 +328,74 @@
       transition: all 0.15s;
     }
 
-    .btn-download-all:hover { background: var(--accent-hover); }
+    .btn-copy:hover { background: var(--accent-hover); }
+    .btn-copy.copied { background: var(--success); }
 
-    /* ===== ERROR ===== */
-    .error-box {
-      background: #fef2f2;
-      border: 1.5px solid #fca5a5;
-      border-radius: 8px;
-      padding: 14px;
-      color: #dc2626;
-      font-size: 14px;
-      margin-top: 12px;
-      display: none;
+    .usage-card {
+      background: var(--success-light);
+      border: 1.5px solid #86efac;
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 14px;
     }
 
-    .error-box.show { display: block; }
+    .usage-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 10px;
+    }
 
-    /* ===== TOAST ===== */
+    .usage-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .usage-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #166534;
+    }
+
+    .usage-step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--success);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .ai-links {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ai-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+    }
+
+    .ai-link:hover { border-color: var(--accent); color: var(--accent); }
+
     .copy-toast {
       position: fixed;
       bottom: 24px;
@@ -440,8 +424,8 @@
     footer a { color: var(--accent); text-decoration: none; }
 
     @media (max-width: 480px) {
-      .preview-section { padding: 18px; }
-      .preview-section h1 { font-size: 18px; }
+      .hero { padding: 18px; }
+      .hero h1 { font-size: 18px; }
       .card { padding: 16px; }
       .btn-generate { font-size: 15px; padding: 14px; }
       .header-badge { display: none; }
@@ -453,42 +437,24 @@
 <header>
   <div class="header-inner">
     <div class="header-icon">📋</div>
-    <span class="header-title">AI業務マニュアル作成ツール</span>
+    <span class="header-title">AI業務マニュアル プロンプト生成ツール</span>
     <span class="header-badge">AIで飯を食う男</span>
   </div>
 </header>
 
 <main>
 
-  <!-- プレビューセクション -->
-  <div class="preview-section">
-    <h1>業務内容を入力するだけで<br>マニュアルが完成します</h1>
-    <p>入力して作成ボタンを押すだけ。AIが業務に特化した資料を自動生成します。</p>
-
-    <div class="sample-output">
-      <div class="sample-output-header">📄 生成サンプル（電話対応の場合）</div>
-      <div class="sample-output-body">
-        <div class="sample-block">
-          <div class="sample-block-title">
-            <span class="sample-tag">業務マニュアル</span>
-            電話対応マニュアル
-          </div>
-          <div class="sample-block-content">
-            ■ 業務概要：お客様からの電話を適切に受け付け、迅速かつ丁寧に対応する。<br>
-            ■ 事前準備：メモ帳・ペンを手元に用意。担当者一覧を確認しておく。<br>
-            ■ 手順：①3コール以内に受話器を取る ②会社名・氏名を名乗る ③要件を確認し復唱する…
-          </div>
-        </div>
-        <div class="sample-block">
-          <div class="sample-block-title">
-            <span class="sample-tag">チェックリスト</span>
-            確認項目
-          </div>
-          <div class="sample-block-content">
-            □ 3コール以内に対応したか　□ 会社名と氏名を名乗ったか　□ 要件を復唱したか…
-          </div>
-        </div>
-      </div>
+  <div class="hero">
+    <h1>業務内容を入力するだけで<br>最適なプロンプトが完成します</h1>
+    <p>生成されたプロンプトをChatGPTやClaudeに貼り付けるだけで、プロ品質の業務マニュアルが作れます。登録不要・完全無料。</p>
+    <div class="flow">
+      <div class="flow-step">① 業務内容を入力</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">② プロンプトを生成</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">③ AIに貼り付ける</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">④ マニュアル完成</div>
     </div>
   </div>
 
@@ -497,7 +463,7 @@
     <div class="step-label">STEP 1</div>
     <label for="bizName">業務名を入力してください</label>
     <div class="example-label">👇 タップで入力例を使えます</div>
-    <div class="example-btns" id="nameExamples">
+    <div class="example-btns">
       <button class="example-btn" onclick="fillName('電話対応')">電話対応</button>
       <button class="example-btn" onclick="fillName('レジ操作')">レジ操作</button>
       <button class="example-btn" onclick="fillName('在庫管理')">在庫管理</button>
@@ -524,7 +490,7 @@
   <div class="card">
     <div class="step-label">STEP 3</div>
     <label>作成する資料を選んでください（複数選択可）</label>
-    <div class="checkbox-group" id="checkboxGroup">
+    <div class="checkbox-group">
       <label class="checkbox-item checked">
         <input type="checkbox" value="manual" checked />
         <div class="checkbox-label">
@@ -549,22 +515,54 @@
     </div>
   </div>
 
-  <button class="btn-generate" id="generateBtn" onclick="generate()">
-    作成する
-  </button>
+  <!-- STEP4 -->
+  <div class="card">
+    <div class="step-label">STEP 4</div>
+    <label for="targetAI">使用するAIを選んでください</label>
+    <p class="hint">選んだAIに最適化されたプロンプトを生成します。</p>
+    <select id="targetAI">
+      <option value="general">どのAIでも使える（汎用）</option>
+      <option value="chatgpt">ChatGPT</option>
+      <option value="claude">Claude</option>
+      <option value="gemini">Gemini</option>
+    </select>
+  </div>
+
+  <button class="btn-generate" onclick="generate()">プロンプトを生成する</button>
 
   <div class="error-box" id="errorBox"></div>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>AIが資料を作成しています…<br><small>少々お待ちください（10〜30秒）</small></p>
-  </div>
-
   <div class="result-section" id="resultSection">
-    <div id="resultCards"></div>
-    <div class="result-actions-bottom">
-      <button class="btn-download-all" onclick="downloadAll()">📥 全資料をテキスト保存</button>
+
+    <div class="usage-card">
+      <h3>✅ プロンプトの使い方</h3>
+      <div class="usage-steps">
+        <div class="usage-step">
+          <div class="usage-step-num">1</div>
+          <div>下のプロンプトをコピーする</div>
+        </div>
+        <div class="usage-step">
+          <div class="usage-step-num">2</div>
+          <div>ChatGPTまたはClaudeを開く</div>
+        </div>
+        <div class="usage-step">
+          <div class="usage-step-num">3</div>
+          <div>コピーしたプロンプトを貼り付けて送信する</div>
+        </div>
+        <div class="usage-step">
+          <div class="usage-step-num">4</div>
+          <div>プロ品質のマニュアルが完成する</div>
+        </div>
+      </div>
+      <div class="ai-links">
+        <a href="https://chat.openai.com" target="_blank" class="ai-link">ChatGPTを開く →</a>
+        <a href="https://claude.ai" target="_blank" class="ai-link">Claudeを開く →</a>
+        <a href="https://gemini.google.com" target="_blank" class="ai-link">Geminiを開く →</a>
+      </div>
     </div>
+
+    <div id="promptCards"></div>
+
   </div>
 
 </main>
@@ -584,12 +582,10 @@
 
   function fillName(val) {
     document.getElementById('bizName').value = val;
-    document.getElementById('bizName').focus();
   }
 
   function fillDetail(key) {
     document.getElementById('bizDetail').value = examples[key];
-    document.getElementById('bizDetail').focus();
   }
 
   document.querySelectorAll('.checkbox-item input').forEach(cb => {
@@ -598,114 +594,133 @@
     });
   });
 
-  const results = {};
-
   const typeConfig = {
-    manual:   { label: '業務マニュアル',  icon: '📄' },
-    checklist:{ label: 'チェックリスト',  icon: '✅' },
-    training: { label: '新人教育資料',    icon: '👤' }
+    manual:    { label: '業務マニュアル',  icon: '📄' },
+    checklist: { label: 'チェックリスト',  icon: '✅' },
+    training:  { label: '新人教育資料',    icon: '👤' }
   };
 
-  const prompts = {
-    manual: (name, detail) => `以下の業務について、実用的な業務マニュアルを作成してください。
+  function buildPrompt(type, bizName, bizDetail, aiType) {
+    const roleMap = {
+      chatgpt: 'あなたは業務マニュアル作成の専門家です。',
+      claude:  'あなたはプロの業務コンサルタントです。',
+      gemini:  'あなたは経験豊富なビジネスアナリストです。',
+      general: 'あなたは業務マニュアル作成の専門家です。'
+    };
 
-業務名：${name}
-業務詳細：${detail}
+    const role = roleMap[aiType] || roleMap.general;
 
-【フォーマット】
-■ 業務概要
-■ 事前準備
-■ 手順（番号付きで詳細に）
-■ 注意事項
-■ トラブル対応
+    const formats = {
+      manual: `${role}
 
-読みやすく、現場で使えるマニュアルにしてください。`,
+以下の業務について、現場で実際に使える業務マニュアルを作成してください。
 
-    checklist: (name, detail) => `以下の業務について、実用的なチェックリストを作成してください。
+【業務名】
+${bizName}
 
-業務名：${name}
-業務詳細：${detail}
+【業務内容】
+${bizDetail}
 
-【フォーマット】
+【作成してほしいもの】
+以下の構成で、具体的かつ詳細なマニュアルを作成してください。
+
+■ 業務概要（この業務の目的と重要性）
+■ 事前準備（必要なもの・確認事項）
+■ 作業手順（番号付きで、初心者でもわかるレベルに詳しく）
+■ 注意事項（ミスしやすいポイント・禁止事項）
+■ トラブル対応（よくある問題とその解決方法）
+
+【条件】
+- 誰が読んでもわかる平易な言葉を使うこと
+- 曖昧な表現を避け、具体的に書くこと
+- 実際の現場で使えるレベルの内容にすること`,
+
+      checklist: `${role}
+
+以下の業務について、実際に使えるチェックリストを作成してください。
+
+【業務名】
+${bizName}
+
+【業務内容】
+${bizDetail}
+
+【作成してほしいもの】
+以下の3つのチェックリストを作成してください。
+
 ■ 事前確認チェックリスト
-□ 項目
+（作業開始前に確認すべき項目を□で列挙）
 
 ■ 作業中チェックリスト
-□ 項目
+（作業中に確認すべき項目を□で列挙）
 
 ■ 完了確認チェックリスト
-□ 項目
+（作業終了後に確認すべき項目を□で列挙）
 
-実際に印刷して使えるチェックリストにしてください。`,
+【条件】
+- 各項目は具体的で確認しやすい内容にすること
+- 漏れが起きやすいポイントを必ず含めること
+- 印刷して使えるシンプルな形式にすること`,
 
-    training: (name, detail) => `以下の業務について、新人向け教育資料を作成してください。
+      training: `${role}
 
-業務名：${name}
-業務詳細：${detail}
+以下の業務について、新人向けの教育資料を作成してください。
 
-【フォーマット】
-■ この業務について（目的・重要性）
-■ 覚えておくべきポイント
-■ 具体的な手順（初心者向けに丁寧に）
-■ よくある失敗と対処法
-■ 先輩からのアドバイス
+【業務名】
+${bizName}
 
-業務未経験の新人でも理解できるよう、わかりやすく書いてください。`
-  };
+【業務内容】
+${bizDetail}
 
-  async function generate() {
+【作成してほしいもの】
+以下の構成で、新人でも理解できる教育資料を作成してください。
+
+■ この業務について（目的・なぜ重要か）
+■ 覚えておくべき3つのポイント
+■ 具体的な手順（初めての人でも迷わないレベルに詳しく）
+■ よくある失敗とその防ぎ方
+■ 先輩からのアドバイス（現場のコツ）
+■ 習得度チェック（自己確認用の質問3つ）
+
+【条件】
+- 業務未経験者が読むことを想定すること
+- 専門用語は使わず、使う場合は説明を加えること
+- 読んだ後に「やってみよう」と思える内容にすること`
+    };
+
+    return formats[type];
+  }
+
+  function generate() {
     const bizName = document.getElementById('bizName').value.trim();
     const bizDetail = document.getElementById('bizDetail').value.trim();
     const checked = [...document.querySelectorAll('.checkbox-item input:checked')].map(c => c.value);
+    const aiType = document.getElementById('targetAI').value;
 
     if (!bizName) { showError('業務名を入力してください。'); return; }
     if (!bizDetail) { showError('業務の詳細を入力してください。'); return; }
     if (checked.length === 0) { showError('作成する資料を1つ以上選んでください。'); return; }
 
     hideError();
-    setLoading(true);
 
-    try {
-      for (const type of checked) {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            messages: [{ role: 'user', content: prompts[type](bizName, bizDetail) }]
-          })
-        });
-
-        if (!res.ok) throw new Error('API error');
-        const data = await res.json();
-        results[type] = data.content.map(b => b.text || '').join('');
-      }
-
-      showResults(checked);
-    } catch(e) {
-      showError('エラーが発生しました。しばらくしてから再度お試しください。');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function showResults(checked) {
-    const container = document.getElementById('resultCards');
+    const container = document.getElementById('promptCards');
     container.innerHTML = '';
 
     checked.forEach(type => {
       const cfg = typeConfig[type];
+      const prompt = buildPrompt(type, bizName, bizDetail, aiType);
+
       const card = document.createElement('div');
       card.className = 'result-card';
       card.innerHTML = `
         <div class="result-card-header">
-          <div class="result-card-title">${cfg.icon} ${cfg.label}</div>
-          <div class="result-card-actions">
-            <button class="btn-copy-single" onclick="copySingle('${type}')">コピー</button>
-          </div>
+          <div class="result-card-title">${cfg.icon} ${cfg.label}用プロンプト</div>
         </div>
-        <div class="result-content" id="content-${type}">${escapeHtml(results[type])}</div>
+        <div class="result-card-sub">このプロンプトをコピーしてChatGPT・Claudeに貼り付けてください</div>
+        <div class="prompt-box" id="prompt-${type}">${escapeHtml(prompt)}</div>
+        <button class="btn-copy" id="copybtn-${type}" onclick="copyPrompt('${type}')">
+          📋 このプロンプトをコピーする
+        </button>
       `;
       container.appendChild(card);
     });
@@ -714,21 +729,22 @@
     document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function copySingle(type) {
-    navigator.clipboard.writeText(results[type]).then(() => showToast());
-  }
+  const promptTexts = {};
 
-  function downloadAll() {
-    const bizName = document.getElementById('bizName').value.trim();
-    const all = Object.entries(results).map(([k, v]) => {
-      return `【${typeConfig[k].label}】\n\n${v}`;
-    }).join('\n\n' + '─'.repeat(30) + '\n\n');
+  function copyPrompt(type) {
+    const box = document.getElementById('prompt-' + type);
+    const text = box.innerText;
+    const btn = document.getElementById('copybtn-' + type);
 
-    const blob = new Blob([all], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${bizName}_マニュアル.txt`;
-    a.click();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ コピーしました';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 このプロンプトをコピーする';
+        btn.classList.remove('copied');
+      }, 2000);
+      showToast();
+    });
   }
 
   function showToast() {
@@ -747,15 +763,8 @@
     document.getElementById('errorBox').classList.remove('show');
   }
 
-  function setLoading(on) {
-    document.getElementById('loading').classList.toggle('show', on);
-    document.getElementById('generateBtn').disabled = on;
-    document.getElementById('generateBtn').textContent = on ? '作成中...' : '作成する';
-    if (on) document.getElementById('resultSection').classList.remove('show');
-  }
-
   function escapeHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   }
 </script>
 </body>
